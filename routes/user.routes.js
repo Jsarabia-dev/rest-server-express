@@ -12,7 +12,7 @@ const {
 // Middlewares
 const { fieldsValidator } = require('../middlewares/validator.middleware');
 const { validateJWT } = require('../middlewares/validator-jwt.middlewares');
-const { isRole } = require('../middlewares/validator-roles-middlewares');
+const { hasRole } = require('../middlewares/validator-roles-middlewares');
 
 // Helpers
 const { isValidRole, isEmailExist, userExistByID } = require('../helpers/db-validators.helper');
@@ -50,7 +50,7 @@ router.delete(
   [
     validateJWT,
     // isAdminRole,
-    isRole,
+    hasRole('ADMIN_ROLE', 'SELL_ROLE'),
     check('id', 'No es un ID valido').isMongoId(),
     check('id').custom(userExistByID),
     fieldsValidator,
