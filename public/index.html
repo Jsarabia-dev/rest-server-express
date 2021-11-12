@@ -9,7 +9,37 @@
 </head>
 
 <body>
-    <h1>Acceso denegado</h1>
+    <div id="g_id_onload" data-client_id="831010072580-1c721701k1bam19t2ht8njv4s87h19l1.apps.googleusercontent.com"
+        data-auto_prompt="false" data-callback="handleCredentialResponse">
+    </div>
+    <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with"
+        data-shape="rectangular" data-logo_alignment="left">
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        function handleCredentialResponse(response) {
+            // GOOGLE TOKEN
+            console.log('ID_toke:', response.credential)
+
+            const body = { id_token: response.credential }
+
+            fetch(
+                'http://localhost:8080/api/auth/google',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                },
+            )
+            .then( resp => resp.json() )
+            .then( console.log )
+            .catch( console.warn )
+
+
+        }
+    </script>
 </body>
 
 </html>

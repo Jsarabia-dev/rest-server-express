@@ -10,9 +10,10 @@ const {
 } = require('../controllers/user.controller');
 
 // Middlewares
-const { fieldsValidator } = require('../middlewares/validator.middleware');
-const { validateJWT } = require('../middlewares/validator-jwt.middlewares');
-const { hasRole } = require('../middlewares/validator-roles-middlewares');
+const { 
+  fieldsValidator,
+  validateJWT,
+  hasRole } = require('../middlewares');
 
 // Helpers
 const { isValidRole, isEmailExist, userExistByID } = require('../helpers/db-validators.helper');

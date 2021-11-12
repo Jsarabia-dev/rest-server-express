@@ -34,4 +34,24 @@ const authLogin = async (req = request, res = response) => {
   }
 };
 
-module.exports = { authLogin };
+const authGoogle = async (req = request, res = response) => {
+  const { id_token } = req.body;
+
+  try {
+    
+
+    res.json({
+      msg: 'Todo OK',
+      id_token,
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: 'Error in login' });
+  }
+};
+
+module.exports = { 
+  authLogin,
+  authGoogle,
+};
