@@ -1,14 +1,23 @@
-const {OAuth2Client} = require('google-auth-library');
+/* eslint-disable no-console */
+const { OAuth2Client } = require('google-auth-library');
 
-const clientID = process.env.GOOGLE_CLIENT_ID
-const client = new OAuth2Client(clientID);
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-async function verify() {
+async function googleVerify(token) {
   const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: clientID,
+    idToken: token,
+    audience: process.env.GOOGLE_CLIENT_ID,
   });
-  const payload = ticket.getPayload();
-  const userid = payload['sub'];
+
+  const { name, picture, email } = ticket.getPayload();
+
+  return {
+    nombre: name,
+    img: picture,
+    correo: email,
+  };
 }
-verify().catch(console.error);
+
+module.exports = {
+  googleVerify,
+};

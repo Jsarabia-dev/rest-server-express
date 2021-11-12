@@ -9,21 +9,38 @@
 </head>
 
 <body>
-    <div id="g_id_onload" data-client_id="831010072580-1c721701k1bam19t2ht8njv4s87h19l1.apps.googleusercontent.com"
-        data-auto_prompt="false" data-callback="handleCredentialResponse">
+
+    <h1>Google Sigin</h1>
+    <br>
+
+    <div 
+        id="g_id_onload" 
+        data-client_id="831010072580-1c721701k1bam19t2ht8njv4s87h19l1.apps.googleusercontent.com"
+        data-auto_prompt="false" 
+        data-callback="handleCredentialResponse">
     </div>
-    <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with"
-        data-shape="rectangular" data-logo_alignment="left">
+
+    <div 
+        class="g_id_signin" 
+        data-type="standard" 
+        data-size="large" 
+        data-theme="outline" 
+        data-text="sign_in_with"
+        data-shape="rectangular" 
+        data-logo_alignment="left">
     </div>
+
+    <button id="google_signout">Signout</button>
 
     <!-- SCRIPTS -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
+
         function handleCredentialResponse(response) {
             // GOOGLE TOKEN
-            console.log('ID_toke:', response.credential)
+            console.log('idToken:', response.credential)
 
-            const body = { id_token: response.credential }
+            const body = { idToken: response.credential }
 
             fetch(
                 'http://localhost:8080/api/auth/google',
@@ -31,13 +48,28 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
-                },
+                }
             )
-            .then( resp => resp.json() )
-            .then( console.log )
-            .catch( console.warn )
+                .then(resp => resp.json())
+                .then(resp => {
+                    console.log(resp);
+                    localStorage.setItem( 'email', resp.user.correo );
+                    location.reload();
 
+                })
+                .catch(console.warn)
+        }
 
+        const button = document.getElementById('google_signout');
+        button.onclick = () => {
+            google.accounts.id.disableAutoSelect()
+
+            google.accounts.id.revoke( localStorage.getItem( 'email' ), done => {
+                localStorage.clear();
+                location.reload();
+            })
+
+            
         }
     </script>
 </body>

@@ -4,6 +4,7 @@ const bcryptjs = require('bcryptjs');
 
 const User = require('../models/user.model');
 const { generateJWT } = require('../helpers/generate-jwt.helper');
+const { googleVerify } = require('../helpers/google.verify.helper');
 
 const authLogin = async (req = request, res = response) => {
   const { correo, password } = req.body;
@@ -35,23 +36,42 @@ const authLogin = async (req = request, res = response) => {
 };
 
 const authGoogle = async (req = request, res = response) => {
-  const { id_token } = req.body;
+  const { idToken } = req.body;
 
   try {
-    
+    const { nombre, img, correo } = await googleVerify(idToken);
+
+    let user = await User.findOne({ correo });
+
+    if (!user) {
+      const data = {
+        nombre,
+        correo,
+        password: ':P',
+        img,
+        google: true,
+      };
+
+      user = new User(data);
+      await user.save();
+    }
+
+    if (!user.estado) return res.status(401).json({ msg: 'Usuario no habilitado' });
+
+    // Generate JWT
+    const token = await generateJWT(user.id);
 
     res.json({
-      msg: 'Todo OK',
-      id_token,
+      user,
+      token,
     });
-
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ msg: 'Error in login' });
+    return res.status(500).json({ msg: 'Invalid Token' });
   }
 };
 
-module.exports = { 
+module.exports = {
   authLogin,
   authGoogle,
 };

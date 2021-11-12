@@ -20,7 +20,7 @@ router.post(
 router.post(
   '/google',
   [
-    check('id_token', 'Token de google es necesario').not().isEmpty(),
+    check('idToken', 'Token de google es necesario').not().isEmpty(),
     fieldsValidator,
   ],
   authGoogle,

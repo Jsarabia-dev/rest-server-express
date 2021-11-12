@@ -10,13 +10,10 @@ const isAdminRole = (req, res, next) => {
   next();
 };
 
-const hasRole = (...roles) => {
-  return (req = request, res = response, next) => {
+const hasRole = (...roles) => (req = request, res = response, next) => {
+  if (!roles.includes(req.userAuth.rol)) return res.status(401).json({ msg: `El servicio requiere uno de estos roles: ${roles}` });
 
-    if (!roles.includes(req.userAuth.rol)) return res.status(401).json({ msg: `El servicio requiere uno de estos roles: ${roles}` })
-
-    next();
-  }
+  next();
 };
 
 module.exports = {
