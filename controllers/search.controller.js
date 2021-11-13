@@ -1,8 +1,9 @@
+/* eslint-disable consistent-return */
 const { request, response } = require('express');
 const { ObjectId } = require('mongoose').Types;
 
 const {
-  Category, User, Role, Product,
+  Category, User, Product,
 } = require('../models');
 
 const permittedCollections = [
