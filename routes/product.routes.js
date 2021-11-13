@@ -2,14 +2,14 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 
 const {
-  getCategories,
-  getCategoryById,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-} = require('../controllers/category.controller');
+  getProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} = require('../controllers/product.controller');
 
-const { categoryExistByID } = require('../helpers/db-validators.helper');
+const { categoryExistByID, productExistByID } = require('../helpers/db-validators.helper');
 
 const { fieldsValidator, validateJWT, isAdminRole } = require('../middlewares');
 
@@ -17,17 +17,17 @@ const router = Router();
 
 router.get(
   '/',
-  getCategories,
+  getProducts,
 );
 
 router.get(
   '/:id',
   [
     check('id', 'No es un ID valido').isMongoId(),
-    check('id').custom(categoryExistByID),
+    check('id').custom(productExistByID),
     fieldsValidator,
   ],
-  getCategoryById,
+  getProductById,
 );
 
 router.post(
@@ -35,9 +35,11 @@ router.post(
   [
     validateJWT,
     check('name', 'name is mandatory').not().isEmpty(),
+    check('category', 'ID no valid').isMongoId(),
+    check('category').custom(categoryExistByID),
     fieldsValidator,
   ],
-  createCategory,
+  createProduct,
 );
 
 router.put(
@@ -45,11 +47,10 @@ router.put(
   [
     validateJWT,
     check('id', 'ID no valid').isMongoId(),
-    check('name', 'name is mandatory').not().isEmpty(),
-    check('id').custom(categoryExistByID),
+    check('id').custom(productExistByID),
     fieldsValidator,
   ],
-  updateCategory,
+  updateProduct,
 );
 
 router.delete(
@@ -59,10 +60,10 @@ router.delete(
     isAdminRole,
     check('id', 'ID is mandatory').not().isEmpty(),
     check('id', 'ID no valid').isMongoId(),
-    check('id').custom(categoryExistByID),
+    check('id').custom(productExistByID),
     fieldsValidator,
   ],
-  deleteCategory,
+  deleteProduct,
 );
 
 module.exports = router;
