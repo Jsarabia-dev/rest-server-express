@@ -1,19 +1,40 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 
-const { uploadFile } = require('../controllers/uploads.controller');
-const { fieldsValidator } = require('../middlewares/validator.middleware');
+const { uploadFile, updateImg, getImage } = require('../controllers/uploads.controller');
+const { validateAllowedCollection } = require('../helpers');
+const { fieldsValidator, validateUploadFile } = require('../middlewares');
 
 const router = Router();
 
 router.post(
   '/',
   [
-    // check('correo', 'El correo no es valido').isEmail(),
-    // check('password', 'El password es olbigatorio').not().isEmpty(),
-    // fieldsValidator,
+    validateUploadFile,
+    fieldsValidator,
   ],
   uploadFile,
+);
+
+router.put(
+  '/:collection/:id',
+  [
+    validateUploadFile,
+    check('id', 'ID not valid').isMongoId(),
+    check('collection').custom((c) => validateAllowedCollection(c, ['users', 'products'])),
+    fieldsValidator,
+  ],
+  updateImg,
+);
+
+router.get(
+  '/:collection/:id',
+  [
+    check('id', 'ID not valid').isMongoId(),
+    check('collection').custom((c) => validateAllowedCollection(c, ['users', 'products'])),
+    fieldsValidator,
+  ],
+  getImage,
 );
 
 module.exports = router;

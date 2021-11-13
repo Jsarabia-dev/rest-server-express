@@ -1,10 +1,11 @@
-
-const fieldsValidator = require('../middlewares/validator.middleware');
-const jwtValidator = require('../middlewares/validator-jwt.middlewares');
-const roleValidator = require('../middlewares/validator-roles-middlewares');
+const fieldsValidator = require('./validator.middleware');
+const jwtValidator = require('./validator-jwt.middlewares');
+const roleValidator = require('./validator-roles-middlewares');
+const fileValidator = require('./validator-files.middleware');
 
 module.exports = {
-    ...fieldsValidator,
-    ...jwtValidator,
-    ...roleValidator
-}
+  ...fieldsValidator,
+  ...jwtValidator,
+  ...roleValidator,
+  ...fileValidator,
+};

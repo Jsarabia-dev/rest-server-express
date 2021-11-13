@@ -1,14 +1,13 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-console */
 const { request, response } = require('express');
+const path = require('path');
+const fs = require('fs');
 
 const { saveFile } = require('../helpers');
+const { User, Product } = require('../models');
 
 const uploadFile = async (req = request, res = response) => {
-  if (!req.files || Object.keys(req.files).length === 0 || !req.files.file) {
-    return res.status(400).send('No files were uploaded.');
-  }
-
   try {
     const tempFileName = await saveFile(req.files, 'folder', ['txt', 'md']);
     return res.status(200).send({ msg: tempFileName });
@@ -16,6 +15,70 @@ const uploadFile = async (req = request, res = response) => {
     return res.status(500).send({ msg });
   }
 };
+
+const updateImg = async (req = request, res = response) => {
+  let model;
+  const { id, collection } = req.params;
+
+  switch (collection) {
+    case 'users':
+      model = await User.findById(id);
+      if (!model) res.status(400).send({ msg: `User with id: ${id} not exist` });
+      break;
+
+    case 'products':
+      model = await Product.findById(id);
+      if (!model) res.status(400).send({ msg: `Product with id: ${id} not exist` });
+      break;
+
+    default:
+      return res.status(500).send({ msg: `Update imgage from CollectioName: ${collection} not active` });
+  }
+
+  // Delete old image
+  if (model.img) {
+    const pathImage = path.join(__dirname, '../uploads', collection, model.img);
+    if (fs.existsSync(pathImage)) fs.unlinkSync(pathImage);
+  }
+
+  const imgName = await saveFile(req.files, collection, undefined);
+  model.img = imgName;
+
+  await model.save();
+
+  res.json(model);
+};
+
+const getImage = async (req = request, res = response) => {
+  let model;
+  const { id, collection } = req.params;
+
+  switch (collection) {
+    case 'users':
+      model = await User.findById(id);
+      if (!model) res.status(400).send({ msg: `User with id: ${id} not exist` });
+      break;
+
+    case 'products':
+      model = await Product.findById(id);
+      if (!model) res.status(400).send({ msg: `Product with id: ${id} not exist` });
+      break;
+
+    default:
+      return res.status(500).send({ msg: `Get image for the CollectioName: ${collection} not active` });
+  }
+
+  if (model.img) {
+    const pathImage = path.join(__dirname, '../uploads', collection, model.img);
+    if (fs.existsSync(pathImage)) return res.sendFile(pathImage);
+  }
+
+  const pathImageDefault = path.join(__dirname, '../public/assets', 'no-image.jpg');
+  return res.sendFile(pathImageDefault);
+};
+
 module.exports = {
   uploadFile,
+  updateImg,
+  getImage,
 };
